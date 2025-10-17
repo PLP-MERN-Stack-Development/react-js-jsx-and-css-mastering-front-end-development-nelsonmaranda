@@ -1,14 +1,32 @@
-import { useState } from 'react';
-import './App.css';
+import { useEffect, useState } from 'react';
+import TaskManager from './components/TaskManager';
 
-// Import your components here
-// import Button from './components/Button';
-// import Navbar from './components/Navbar';
-// import Footer from './components/Footer';
-// import TaskManager from './components/TaskManager';
+// Components
 
 function App() {
   const [count, setCount] = useState(0);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Simple API integration using JSONPlaceholder
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const res = await fetch('https://jsonplaceholder.typicode.com/users');
+        if (!res.ok) throw new Error('Failed to fetch users');
+        const data = await res.json();
+        setUsers(data.slice(0, 5));
+      } catch (e) {
+        setError(e.message || 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -22,13 +40,9 @@ function App() {
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg p-6">
           <div className="flex flex-col items-center justify-center">
-            <p className="text-lg mb-4">
-              Edit <code className="font-mono bg-gray-200 dark:bg-gray-700 p-1 rounded">src/App.jsx</code> and save to test HMR
-            </p>
-            
             <div className="flex items-center gap-4 my-4">
               <button
-                onClick={() => setCount((count) => count - 1)}
+                onClick={() => setCount((count) => Math.max(0, count - 1))}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
               >
                 -
@@ -42,18 +56,28 @@ function App() {
               </button>
             </div>
 
-            <p className="text-gray-500 dark:text-gray-400 mt-4">
-              Implement your TaskManager component here
-            </p>
+            <TaskManager />
           </div>
         </div>
         
-        {/* API data display will go here */}
         <div className="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg p-6">
           <h2 className="text-2xl font-bold mb-4">API Data</h2>
-          <p className="text-gray-500 dark:text-gray-400">
-            Fetch and display data from an API here
-          </p>
+          {loading && (
+            <p className="text-gray-500 dark:text-gray-400">Loading users...</p>
+          )}
+          {error && (
+            <p className="text-red-600">{error}</p>
+          )}
+          {!loading && !error && (
+            <ul className="space-y-2">
+              {users.map((u) => (
+                <li key={u.id} className="p-3 border rounded-lg dark:border-gray-700">
+                  <div className="font-medium">{u.name}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">{u.email}</div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </main>
 

@@ -62,6 +62,10 @@ Your work will be automatically submitted when you push to your GitHub Classroom
 4. Style your application with Tailwind CSS
 5. Deploy your application and add the URL to your README.md
 
+## Deployment
+
+- Live site: https://plptaskmanager1.netlify.app/
+
 ## Resources
 
 - [React Documentation](https://react.dev/)
